@@ -7,6 +7,8 @@ type Message = {
   id: string; name: string; email: string;
   subject: string | null; message: string;
   read: boolean; created_at: string; email_sent: boolean
+  project_type: string | null; budget_range: string | null;
+  timeline: string | null; preferred_contact: string | null
 }
 
 export function MessagesManager({ initialMessages }: { initialMessages: Message[] }) {
@@ -25,7 +27,9 @@ export function MessagesManager({ initialMessages }: { initialMessages: Message[
         return m.name.toLowerCase().includes(q) ||
           m.email.toLowerCase().includes(q) ||
           (m.subject || '').toLowerCase().includes(q) ||
-          m.message.toLowerCase().includes(q)
+          m.message.toLowerCase().includes(q) ||
+          (m.project_type || '').toLowerCase().includes(q) ||
+          (m.budget_range || '').toLowerCase().includes(q)
       }
       return true
     })
@@ -143,6 +147,21 @@ export function MessagesManager({ initialMessages }: { initialMessages: Message[
               {m.subject && (
                 <p style={{ fontSize: 12, letterSpacing: '0.06em', color: '#666', marginBottom: 8 }}>{m.subject}</p>
               )}
+              {(m.project_type || m.budget_range || m.timeline || m.preferred_contact) && (
+                <dl className="message-qualification">
+                  {[
+                    ['Project', m.project_type],
+                    ['Budget', m.budget_range],
+                    ['Timeline', m.timeline],
+                    ['Reply via', m.preferred_contact],
+                  ].filter(([, value]) => value).map(([label, value]) => (
+                    <div key={label}>
+                      <dt>{label}</dt>
+                      <dd>{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
               <p style={{ fontSize: 14, color: '#999', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{m.message}</p>
             </div>
           ))}
@@ -187,10 +206,18 @@ export function MessagesManager({ initialMessages }: { initialMessages: Message[
         }
         .msg-action-btn:hover { color: #999; border-color: #555; }
         .msg-action-btn-danger:hover { color: #C41E3A; border-color: #C41E3A; }
+        .message-qualification {
+          display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px;
+          margin: 16px 0; background: #1F1F1F; border: 1px solid #1F1F1F;
+        }
+        .message-qualification > div { background: #0A0A0A; padding: 12px 14px; }
+        .message-qualification dt { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: #555; margin-bottom: 5px; }
+        .message-qualification dd { margin: 0; font-size: 12px; color: #D6D6D6; line-height: 1.4; }
 
         @media(max-width: 640px) {
           .msg-search { max-width: none; width: 100%; }
           .msg-clear-btn { margin-left: 0; }
+          .message-qualification { grid-template-columns: 1fr 1fr; }
         }
       `}</style>
     </div>
