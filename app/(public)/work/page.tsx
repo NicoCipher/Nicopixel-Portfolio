@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/static'
 import { WorkGallery } from '@/components/sections/WorkGallery'
 import { Reveal } from '@/components/ui/Reveal'
 import Link from 'next/link'
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 }
 
 export default async function WorkPage() {
-  const supabase = await createClient()
+  const supabase = createPublicClient()
   const { data: projects } = await supabase
     .from('projects').select('*')
     .eq('published', true)

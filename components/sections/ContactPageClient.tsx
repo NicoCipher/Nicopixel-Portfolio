@@ -7,14 +7,19 @@ import { Reveal } from '@/components/ui/Reveal'
 import { trackEvent } from '@/lib/analytics'
 
 const FALLBACK_EMAIL = 'nicocipherr@gmail.com'
+const EMPTY_FORM = {
+  name: '', email: '', subject: '', message: '', website: '',
+  project_type: '', budget_range: '', timeline: '', preferred_contact: '',
+}
 
 function ContactPageInner() {
   const searchParams = useSearchParams()
   const [mode, setMode] = useState<'message' | 'call'>('message')
-  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '', website: '' })
+  const [form, setForm] = useState(EMPTY_FORM)
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
   const [error, setError] = useState('')
   const [contactEmail, setContactEmail] = useState(FALLBACK_EMAIL)
+  const [hasStarted, setHasStarted] = useState(false)
 
   useEffect(() => {
     if (searchParams.get('mode') === 'call') {
@@ -28,6 +33,12 @@ function ContactPageInner() {
     supabase.from('site_settings').select('value').eq('key', 'email').maybeSingle()
       .then(({ data }) => { if (data?.value) setContactEmail(data.value) })
   }, [])
+
+  const trackFormStart = () => {
+    if (hasStarted) return
+    setHasStarted(true)
+    trackEvent('contact_form_started')
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -43,7 +54,7 @@ function ContactPageInner() {
       if (!res.ok) { setError(data.error || 'Something went wrong.'); setStatus('error'); return }
       setStatus('success')
       trackEvent('contact_form_submitted')
-      setForm({ name: '', email: '', subject: '', message: '', website: '' })
+      setForm(EMPTY_FORM)
     } catch {
       setError('Network error. Please try again.')
       setStatus('error')
@@ -88,7 +99,7 @@ function ContactPageInner() {
 
             <div className="contact-info-card">
               {[
-                { label: 'Email', value: contactEmail },
+                { label: 'Email', value: contactEmail, href: `mailto:${contactEmail}` },
                 { label: 'Location', value: 'Lagos, Nigeria' },
                 { label: 'Response', value: 'Within 24 hours' },
               ].map((item, i) => (
@@ -96,7 +107,9 @@ function ContactPageInner() {
                   <span className="contact-info-num">{String(i + 1).padStart(2, '0')}</span>
                   <div>
                     <span className="contact-info-label">{item.label}</span>
-                    <span className="contact-info-value">{item.value}</span>
+                    {item.href
+                      ? <a className="contact-info-value" href={item.href}>{item.value}</a>
+                      : <span className="contact-info-value">{item.value}</span>}
                   </div>
                 </div>
               ))}
@@ -137,13 +150,66 @@ function ContactPageInner() {
                     <label className="form-label" htmlFor="contact-name">Name</label>
                     <input id="contact-name" className="form-input" placeholder="Your name" value={form.name} maxLength={100}
                       autoComplete="name"
-                      onChange={e => setForm({ ...form, name: e.target.value })} required />
+                    onFocus={trackFormStart}
+                    onChange={e => setForm({ ...form, name: e.target.value })} required />
                   </div>
                   <div className="form-group">
                     <label className="form-label" htmlFor="contact-email">Email</label>
                     <input id="contact-email" className="form-input" type="email" placeholder="your@email.com" value={form.email} maxLength={150}
                       autoComplete="email"
                       onChange={e => setForm({ ...form, email: e.target.value })} required />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="project-type">What do you need?</label>
+                    <select id="project-type" className="form-input" value={form.project_type} required
+                      onFocus={trackFormStart}
+                      onChange={e => setForm({ ...form, project_type: e.target.value })}>
+                      <option value="">Choose a project type</option>
+                      <option>Brand identity</option>
+                      <option>Event design</option>
+                      <option>Print or packaging</option>
+                      <option>Website or digital</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="budget-range">Approximate budget</label>
+                    <select id="budget-range" className="form-input" value={form.budget_range} required
+                      onChange={e => { setForm({ ...form, budget_range: e.target.value }); if (e.target.value) trackEvent('budget_selected', '/contact') }}>
+                      <option value="">Choose a range</option>
+                      <option>Under ₦100,000</option>
+                      <option>₦100,000–₦250,000</option>
+                      <option>₦250,000–₦500,000</option>
+                      <option>₦500,000+</option>
+                      <option>Not sure yet</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="project-timeline">When do you need it?</label>
+                    <select id="project-timeline" className="form-input" value={form.timeline} required
+                      onChange={e => setForm({ ...form, timeline: e.target.value })}>
+                      <option value="">Choose a timeline</option>
+                      <option>Within 2 weeks</option>
+                      <option>Within 1 month</option>
+                      <option>1–3 months</option>
+                      <option>Flexible</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="preferred-contact">Preferred reply</label>
+                    <select id="preferred-contact" className="form-input" value={form.preferred_contact} required
+                      onChange={e => { setForm({ ...form, preferred_contact: e.target.value }); if (e.target.value) trackEvent('contact_method_selected', '/contact') }}>
+                      <option value="">Choose a contact method</option>
+                      <option>Email</option>
+                      <option>WhatsApp</option>
+                      <option>Phone call</option>
+                    </select>
                   </div>
                 </div>
 
@@ -199,6 +265,7 @@ function ContactPageInner() {
         .contact-info-num { font-family: var(--font-heading); font-size: 13px; color: var(--accent-text); letter-spacing: 0.1em; flex-shrink: 0; }
         .contact-info-label { display: block; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-subtle); margin-bottom: 4px; }
         .contact-info-value { font-size: 15px; color: var(--fg); font-weight: 500; }
+        a.contact-info-value:hover { color: var(--accent-text); }
 
         .contact-card { border: 1px solid var(--border); background: var(--bg-secondary); padding: 40px; }
         .contact-booking-wrap { min-height: 560px; }

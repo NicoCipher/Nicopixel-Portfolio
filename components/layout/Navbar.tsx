@@ -104,11 +104,12 @@ export function Navbar({ settings }: { settings?: Record<string, string | null> 
   return (
     <>
       <nav style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+        position: 'sticky', top: 0, left: 0, right: 0, zIndex: 100,
         padding: '0 48px', height: 64,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        background: scrolled || menuOpen ? 'var(--bg)' : 'transparent',
-        borderBottom: scrolled || menuOpen ? '1px solid var(--border)' : '1px solid transparent',
+        background: 'var(--bg)',
+        borderBottom: '1px solid var(--border)',
+        boxShadow: scrolled ? '0 8px 24px rgba(0, 0, 0, 0.04)' : 'none',
         transition: 'background 0.3s, border-color 0.3s',
       }}>
         {/* Reading progress bar — thin crimson line at bottom of navbar.

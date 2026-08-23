@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/static'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
@@ -17,7 +17,7 @@ type ServiceRow = {
 }
 
 export default async function ServicesPage() {
-  const supabase = await createClient()
+  const supabase = createPublicClient()
 
   const [
     { data: services },

@@ -1,10 +1,12 @@
 import { Navbar } from '@/components/layout/Navbar'
 import { PageTracker } from '@/components/ui/PageTracker'
 import { Footer } from '@/components/layout/Footer'
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/static'
+
+export const revalidate = 300
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient()
+  const supabase = createPublicClient()
   const { data: settingsRows } = await supabase.from('site_settings').select('key, value')
   const settings: Record<string, string | null> = {}
   settingsRows?.forEach((r: { key: string; value: string | null }) => { settings[r.key] = r.value })
@@ -14,7 +16,7 @@ export default async function PublicLayout({ children }: { children: React.React
       <a href="#main-content" className="skip-to-content">Skip to content</a>
       <Navbar settings={settings} />
       <PageTracker />
-      <main id="main-content" style={{ paddingTop: 64, overflowX: 'hidden', maxWidth: '100vw' }}>
+      <main id="main-content" style={{ overflowX: 'hidden', maxWidth: '100vw' }}>
         {children}
       </main>
       <Footer settings={settings} />

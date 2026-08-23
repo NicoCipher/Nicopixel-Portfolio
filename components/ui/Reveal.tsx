@@ -52,7 +52,7 @@ export function Reveal({
     )
     observer.observe(el)
     return () => observer.disconnect()
-  }, [threshold])
+  }, [threshold, visible])
 
   return (
     <Tag

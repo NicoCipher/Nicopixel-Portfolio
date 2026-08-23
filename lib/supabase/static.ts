@@ -15,3 +15,12 @@ export function createStaticClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 }
+
+/**
+ * Anonymous client for public server-rendered pages. Unlike the session-aware
+ * client, it never reads cookies, so public pages remain eligible for route
+ * caching and do not vary per visitor.
+ */
+export function createPublicClient() {
+  return createStaticClient()
+}

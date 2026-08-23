@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/static'
 import Link from 'next/link'
 import type { Project } from '@/types'
 import { AnimatedStat } from '@/components/ui/AnimatedStat'
@@ -6,7 +6,7 @@ import { FeaturedProjectsAccordion } from '@/components/sections/FeaturedProject
 import { HeroVisual } from '@/components/sections/HeroVisual'
 
 export default async function HomePage() {
-  const supabase = await createClient()
+  const supabase = createPublicClient()
 
   const [
     { data: projects },

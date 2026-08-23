@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/static'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 }
 
 export default async function BlogPage() {
-  const supabase = await createClient()
+  const supabase = createPublicClient()
   const { data: posts } = await supabase
     .from('blog_posts')
     .select('id, title, slug, excerpt, cover_image, category, published_at')

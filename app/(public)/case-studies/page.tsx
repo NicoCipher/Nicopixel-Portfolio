@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/static'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 }
 
 export default async function CaseStudiesPage() {
-  const supabase = await createClient()
+  const supabase = createPublicClient()
   const { data: studies } = await supabase
     .from('projects')
     .select('id, title, slug, category, cover_image, client_name, industry, brief, results')

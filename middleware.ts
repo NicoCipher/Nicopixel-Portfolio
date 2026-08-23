@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { isAdmin } from '@/lib/auth'
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -25,10 +26,10 @@ export async function middleware(request: NextRequest) {
   const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
   const isLoginPage = request.nextUrl.pathname === '/admin/login'
 
-  if (isAdminRoute && !isLoginPage && !user) {
+  if (isAdminRoute && !isLoginPage && !isAdmin(user)) {
     return NextResponse.redirect(new URL('/admin/login', request.url))
   }
-  if (isLoginPage && user) {
+  if (isLoginPage && isAdmin(user)) {
     return NextResponse.redirect(new URL('/admin/dashboard', request.url))
   }
 

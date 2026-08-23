@@ -3,12 +3,14 @@ import './globals.css'
 import { ThemeProvider } from '@/components/ui/ThemeProvider'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/static'
 import { getFontPairing } from '@/lib/fontPairings'
 import { allFontVariables, FONT_PAIRING_VARS } from '@/lib/fonts'
 import { safeJsonLd } from '@/lib/safeJsonLd'
 
 const BASE_URL = 'https://nicopixel.vercel.app'
+
+export const revalidate = 300
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -69,7 +71,7 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // Fetch favicon, logo, and social links from settings
-  const supabase = await createClient()
+  const supabase = createPublicClient()
   const { data: rows } = await supabase.from('site_settings').select('key, value').in('key', [
     'favicon_url', 'logo_url', 'font_pairing',
     'behance', 'behance_enabled', 'instagram', 'instagram_enabled',

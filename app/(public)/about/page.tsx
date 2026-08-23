@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/static'
 import Link from 'next/link'
 import Image from 'next/image'
 import { AnimatedStat } from '@/components/ui/AnimatedStat'
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 }
 
 export default async function AboutPage() {
-  const supabase = await createClient()
+  const supabase = createPublicClient()
   const { data: about } = await supabase.from('about_content').select('*').single()
   const { data: settingsRows } = await supabase.from('site_settings').select('key, value')
   const { data: milestones } = await supabase

@@ -19,6 +19,10 @@ const nextConfig: NextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'X-XSS-Protection', value: '1; mode=block' },
+          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+          { key: 'Cross-Origin-Resource-Policy', value: 'same-origin' },
+          { key: 'Origin-Agent-Cluster', value: '?1' },
+          { key: 'X-Permitted-Cross-Domain-Policies', value: 'none' },
           {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()',
@@ -27,7 +31,7 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://app.cal.com https://va.vercel-scripts.com https://*.vercel-scripts.com",
+              "script-src 'self' 'unsafe-inline' https://app.cal.com https://va.vercel-scripts.com https://*.vercel-scripts.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https://ghkpnzvyxykhkpwyolyp.supabase.co https://app.cal.com",
@@ -36,6 +40,8 @@ const nextConfig: NextConfig = {
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
+              "frame-ancestors 'self'",
+              "upgrade-insecure-requests",
             ].join('; '),
           },
         ],

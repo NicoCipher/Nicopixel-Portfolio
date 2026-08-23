@@ -3,6 +3,10 @@ import { SessionGuard } from '@/components/admin/SessionGuard'
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 
+// Admin routes depend on the signed-in user's session and must never be
+// pre-rendered or cached as public HTML during a production build.
+export const dynamic = 'force-dynamic'
+
 export default async function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
   const { data } = await supabase.from('site_settings').select('value').eq('key', 'session_timeout_minutes').maybeSingle()
