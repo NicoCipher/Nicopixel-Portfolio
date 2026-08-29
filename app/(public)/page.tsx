@@ -2,7 +2,7 @@ import { createPublicClient } from '@/lib/supabase/static'
 import Link from 'next/link'
 import type { Project } from '@/types'
 import { AnimatedStat } from '@/components/ui/AnimatedStat'
-import { FeaturedProjectsAccordion } from '@/components/sections/FeaturedProjectsAccordion'
+import { FeaturedProjectsGallery } from '@/components/sections/FeaturedProjectsGallery'
 import { HeroVisual } from '@/components/sections/HeroVisual'
 
 export default async function HomePage() {
@@ -123,7 +123,7 @@ export default async function HomePage() {
             <Link href="/work" className="link-muted">View All →</Link>
           </div>
           <div style={{ maxWidth: 'var(--content-max)', margin: '0 auto' }}>
-            <FeaturedProjectsAccordion projects={(projects as Project[]).slice(0, 5)} />
+            <FeaturedProjectsGallery projects={(projects as Project[]).slice(0, 5)} />
           </div>
         </section>
       )}
