@@ -1,15 +1,15 @@
 import type { MetadataRoute } from 'next'
 
+const BASE_URL = 'https://nicopixel.vercel.app'
+
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: [
-      {
-        userAgent: '*',
-        allow: '/',
-        disallow: ['/admin/', '/api/'],
-      },
-    ],
-    sitemap: 'https://nicopixel.vercel.app/sitemap.xml',
-    host: 'https://nicopixel.vercel.app',
+    rules: {
+      userAgent: '*',
+      allow: '/',
+      disallow: ['/admin', '/api'],
+    },
+    sitemap: `${BASE_URL}/sitemap.xml`,
+    host: BASE_URL,
   }
 }
